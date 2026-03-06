@@ -779,16 +779,26 @@
                 div.className = 'option';
                 div.dataset.option = key;
                 div.textContent = `${key}. ${currentQuestion.选项[key]}`;
-                const handleSelect = function() {
+                let touchHandled = false;
+                div.addEventListener('touchstart', function(e) {
+                    touchHandled = true;
                     if (currentQuestion.类型 === '单选') {
                         document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
-                        div.classList.add('selected');
+                        this.classList.add('selected');
                     } else {
-                        div.classList.toggle('selected');
+                        this.classList.toggle('selected');
                     }
-                };
-                div.addEventListener('click', handleSelect);
-                div.addEventListener('touchstart', handleSelect);
+                    setTimeout(() => touchHandled = false, 500);
+                });
+                div.addEventListener('click', function(e) {
+                    if (touchHandled) return;
+                    if (currentQuestion.类型 === '单选') {
+                        document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+                        this.classList.add('selected');
+                    } else {
+                        this.classList.toggle('selected');
+                    }
+                });
                 optionsDiv.appendChild(div);
             }
 
