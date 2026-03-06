@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专利代理师考试学习系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f5f5; }
+
+        /* 顶部导航 */
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header h1 { font-size: 20px; margin-bottom: 10px; }
+        .subject-tabs {
+            display: flex;
+            gap: 10px;
+        }
+        .subject-tabs button {
+            padding: 8px 20px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .subject-tabs button.active { background: #3498db; }
+        .subject-tabs button:hover { background: rgba(255,255,255,0.2); }
+
+        /* 侧边栏 */
+        .container { display: flex; height: calc(100vh - 80px); }
+        .sidebar {
+            width: 250px;
+            background: white;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+        }
+        .sidebar h3 { margin-bottom: 15px; color: #2c3e50; font-size: 16px; }
+        .menu-item {
+            padding: 10px 15px;
+            margin: 5px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .menu-item:hover { background: #ecf0f1; }
+        .menu-item.active { background: #3498db; color: white; }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        /* 答题区域 */
+        .question-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        .question-number { font-size: 18px; font-weight: bold; color: #2c3e50; }
+        .question-tags span {
+            padding: 5px 10px;
+            background: #ecf0f1;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        .question-text {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            color: #34495e;
+        }
+        .options {
+            margin-bottom: 25px;
+        }
+        .option {
+            padding: 15px 20px;
+            margin: 10px 0;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .option:hover { border-color: #3498db; background: #f8f9fa; }
+        .option.selected { border-color: #3498db; background: #e3f2fd; }
+        .option.correct { border-color: #27ae60; background: #d5f4e6; }
+        .option.wrong { border-color: #e74c3c; background: #fadbd8; }
+        .option.missed { border-color: #f39c12; background: #fef5e7; }
+
+        /* 按钮组 */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-primary:hover { background: #2980b9; }
+        .btn-secondary { background: #95a5a6; color: white; }
+        .btn-secondary:hover { background: #7f8c8d; }
+
+        /* 解析区域 */
+        .analysis {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            border-radius: 5px;
+            display: none;
+        }
+        .analysis.show { display: block; }
+        .analysis h4 { margin-bottom: 10px; color: #2c3e50; }
+
+        /* 统计面板 */
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .stat-value { font-size: 32px; font-weight: bold; color: #3498db; margin: 10px 0; }
+        .stat-label { color: #7f8c8d; font-size: 14px; }
+        .question-type { font-size: 14px; color: #7f8c8d; font-weight: normal; margin-left: 10px; }
+        #question-count-selector { display: flex; gap: 10px; }
+        #question-count-selector button.active { background: #3498db; }
+        .heatmap { display: flex; gap: 3px; margin-top: 20px; }
+        .heatmap-col { display: flex; flex-direction: column; gap: 3px; }
+        .heatmap-cell { width: 12px; height: 12px; border-radius: 2px; cursor: pointer; }
+        .heatmap-cell.level-0 { background: #ebedf0; }
+        .heatmap-cell.level-1 { background: #c6e48b; }
+        .heatmap-cell.level-2 { background: #7bc96f; }
+        .heatmap-cell.level-3 { background: #239a3b; }
+        .heatmap-cell.level-4 { background: #196127; }
+        .practice-record { padding: 15px; margin: 10px 0; background: white; border-radius: 8px; cursor: pointer; border: 1px solid #ecf0f1; }
+        .practice-record:hover { background: #f8f9fa; }
+        .record-details { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid #ecf0f1; }
+        .topic-progress { margin: 10px 0; }
+        .progress-bar { height: 20px; background: #ecf0f1; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; transition: width 0.3s; }
+        .chart-container { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .stat-change { font-size: 12px; margin-top: 5px; }
+        .stat-change.up { color: #27ae60; }
+        .stat-change.down { color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header">
+        <h1>专利代理师考试学习系统</h1>
+        <div class="subject-tabs">
+            <button class="active" data-subject="专利法">专利法</button>
+            <button data-subject="相关法">相关法</button>
+            <button data-subject="专利实务">专利实务</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 侧边栏 -->
+        <div class="sidebar" id="sidebar">
+            <h3>学习模式</h3>
+            <div class="menu-item active" data-mode="stats">学习统计</div>
+            <div class="menu-item" data-mode="random">随机练习</div>
+            <div class="menu-item" data-mode="topic">按专题练习</div>
+            <div id="topic-list" style="display:none;padding-left:15px;"></div>
+            <div class="menu-item" data-mode="wrong">错题本</div>
+            <div class="menu-item" data-mode="favorite">收藏夹</div>
+            <div class="menu-item" data-mode="review">复习提醒</div>
+            <div class="menu-item" data-mode="exam">模拟考试</div>
+            <div class="menu-item" data-mode="history">提问历史</div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 答题界面（默认显示） -->
+            <div id="practice-view" style="display:none;">
+                <div id="question-count-selector" style="margin-bottom:20px;display:none;">
+                    <button class="btn-secondary" data-count="10">10题</button>
+                    <button class="btn-secondary" data-count="20">20题</button>
+                    <button class="btn-secondary" data-count="30">30题</button>
+                    <button class="btn-secondary" data-count="50">50题</button>
+                    <button class="btn-secondary active" data-count="all">全部</button>
+                </div>
+                <div class="question-card">
+                    <div class="question-header">
+                        <div class="question-number">题目 1/100</div>
+                    </div>
+                    <div class="question-text">
+                        [题目内容将在这里显示]
+                    </div>
+                    <div class="options">
+                        <div class="option" data-option="A">A. 选项A内容</div>
+                        <div class="option" data-option="B">B. 选项B内容</div>
+                        <div class="option" data-option="C">C. 选项C内容</div>
+                        <div class="option" data-option="D">D. 选项D内容</div>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-primary" id="submitBtn">提交答案</button>
+                        <button class="btn-secondary" id="nextBtn">下一题</button>
+                        <button class="btn-secondary" id="collectBtn">收藏本题</button>
+                        <button class="btn-secondary" id="hintBtn">提示</button>
+                        <span id="hintText" style="display:none;margin-left:15px;color:#7f8c8d;">专题一 专利法基础知识与权利归属</span>
+                    </div>
+                    <div class="analysis">
+                        <h4>📖 答案解析</h4>
+                        <p>[AI深度解析将在这里显示]</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 统计界面（隐藏） -->
+            <div id="stats-view" style="display:block;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <h2>学习统计</h2>
+                    <button class="btn-secondary" id="clearStatsBtn">清空统计数据</button>
+                </div>
+                <div class="stats-panel">
+                    <div class="stat-card">
+                        <div class="stat-label">累计答题</div>
+                        <div class="stat-value" id="total-questions">0</div>
+                        <div class="stat-label">题</div>
+                        <div class="stat-change" id="today-new">今日新增0题</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">总正确率</div>
+                        <div class="stat-value" id="accuracy-rate">0%</div>
+                        <div class="stat-change" id="accuracy-change"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">本次正确率</div>
+                        <div class="stat-value" id="session-rate">0%</div>
+                        <div class="stat-change" id="session-count">本次0题</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">错题数</div>
+                        <div class="stat-value" id="wrong-count">0</div>
+                        <div class="stat-label">题</div>
+                        <div class="stat-change" id="review-count">其中待复习0题</div>
+                    </div>
+                </div>
+                <div class="chart-container" id="trend-chart" style="margin-top:30px;"></div>
+                <div id="heatmap-container" style="margin-top:30px;">
+                    <h3 style="margin-bottom:15px;">学习热力图</h3>
+                    <div id="heatmap"></div>
+                </div>
+                <div id="topic-mastery" style="margin-top:30px;"></div>
+            </div>
+
+            <!-- 提问历史界面（隐藏） -->
+            <div id="history-view" style="display:none;">
+                <h2 style="margin-bottom: 20px;">提问历史</h2>
+                <div class="question-card">
+                    <h3>📝 如何使用提问功能</h3>
+                    <p style="margin:15px 0;">当你需要向AI提问专利法相关问题时，请按以下步骤操作：</p>
+                    <ol style="margin-left:20px;line-height:1.8;">
+                        <li>在对话开始时说明："引用提问.md，我要提问"</li>
+                        <li>直接提出你的问题</li>
+                        <li>AI会将对话内容总结到"提问历史"侧边栏</li>
+                    </ol>
+                    <h4 style="margin-top:20px;">提问示例：</h4>
+                    <ul style="margin-left:20px;line-height:1.8;">
+                        <li>外观设计专利保护期限是多少年？</li>
+                        <li>职务发明创造的奖励标准是什么？</li>
+                        <li>专利权共有人如何行使权利？</li>
+                        <li>什么情况下属于职务发明创造？</li>
+                    </ul>
+                    <p style="margin-top:20px;color:#7f8c8d;">💡 注意：AI会自动记录你的提问、涉及的知识点、解答要点和理解建议。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 专题数据
+        const topics = {
+            '专利法': [
+                '专题一 专利法基础知识与权利归属',
+                '专题二 专利代理制度',
+                '专题三 说明书',
+                '专题四 权利要求',
+                '专题五 专利保护的对象和主题',
+                '专题六 优先权',
+                '专题七 新颖性',
+                '专题八 不丧失新颖性的宽限期及同样的发明创造',
+                '专题九 创造性',
+                '专题十 单一性',
+                '专题十一 专利申请的受理和初步审查',
+                '专题十二 对请求书、委托书和著录项目变更申报书的初步审查',
+                '专题十三 涉及优先权专利申请的初步审查',
+                '专题十四 三种特殊专利的审查',
+                '专题十五 实质审查程序',
+                '专题十六 期限和费用',
+                '专题十七 审查过程中的其他程序事项',
+                '专题十八 专利申请中的手续事宜',
+                '专题十九 复审无效总则及复审程序',
+                '专题二十 无效宣告请求审理程序',
+                '专题二十一 口头审理与证据',
+                '专题二十二 外观设计的申请文件与初步审查',
+                '专题二十三 外观设计专利的授权条件',
+                '专题二十四 专利权的内容',
+                '专题二十五 专利侵权判断',
+                '专题二十六 专利纠纷司法程序',
+                '专题二十七 专利争议行政程序',
+                '专题二十八 专利许可',
+                '专题二十九 专利合作条约及其他与专利相关的国际条约',
+                '专题三十 专利文献与专利分类'
+            ],
+            '相关法': [],
+            '专利实务': []
+        };
+
+        // 数据存储
+        let currentSubject = '专利法';
+        let currentMode = 'random';
+        let questionData = {};
+        let userData = {};
+        let currentQuestion = null;
+        let currentQuestionIndex = 0;
+        let allQuestions = [];
+        let practiceQuestions = [];
+        let wrongQuestions = JSON.parse(localStorage.getItem('wrongQuestions') || '{}');
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '{}');
+        let studyStats = JSON.parse(localStorage.getItem('studyStats') || '{}');
+        let sessionStats = { total: 0, correct: 0 };
+
+        // 随机打乱数组
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // 错题本函数
+        function addWrongQuestion(question, wrongAnswer) {
+            const key = question.题目;
+            if (!wrongQuestions[key]) {
+                wrongQuestions[key] = { question, wrongCount: 0, correctCount: 0, lastWrongTime: null, wrongAnswers: [], status: 'new', masteredTime: null };
+            }
+            wrongQuestions[key].wrongCount++;
+            wrongQuestions[key].lastWrongTime = new Date().toISOString();
+            wrongQuestions[key].wrongAnswers.push(wrongAnswer);
+            wrongQuestions[key].correctCount = 0;
+            wrongQuestions[key].status = 'review';
+            localStorage.setItem('wrongQuestions', JSON.stringify(wrongQuestions));
+        }
+
+        function updateCorrectCount(question) {
+            const key = question.题目;
+            if (wrongQuestions[key]) {
+                wrongQuestions[key].correctCount++;
+                if (wrongQuestions[key].correctCount >= 2) {
+                    wrongQuestions[key].status = 'mastered';
+                    wrongQuestions[key].masteredTime = new Date().toISOString();
+                }
+                localStorage.setItem('wrongQuestions', JSON.stringify(wrongQuestions));
+            }
+        }
+
+        // 收藏夹函数
+        function toggleFavorite(question) {
+            const key = question.题目;
+            if (favorites[key]) {
+                delete favorites[key];
+            } else {
+                favorites[key] = {
+                    question,
+                    topic: question.专题 || '未知专题',
+                    time: new Date().toISOString(),
+                    note: ''
+                };
+            }
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateCollectBtn();
+        }
+
+        function isFavorite(question) {
+            return favorites[question.题目] !== undefined;
+        }
+
+        function updateCollectBtn() {
+            const btn = document.getElementById('collectBtn');
+            if (btn && currentQuestion) {
+                if (isFavorite(currentQuestion)) {
+                    btn.style.background = '#3498db';
+                    btn.style.color = 'white';
+                    btn.textContent = '已收藏';
+                } else {
+                    btn.style.background = '#95a5a6';
+                    btn.style.color = 'white';
+                    btn.textContent = '收藏本题';
+                }
+            }
+        }
+
+        function showFavoritesList() {
+            const view = document.getElementById('practice-view');
+            const items = Object.values(favorites);
+
+            if (items.length === 0) {
+                view.innerHTML = '<div class="question-card"><p>收藏夹为空</p></div>';
+                return;
+            }
+
+            let html = '<div style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;"><h3>收藏夹 (共 ' + items.length + ' 题)</h3><button class="btn-secondary" id="clearFavBtn">一键清空</button></div>';
+            items.forEach((item, idx) => {
+                const summary = item.question.题目.substring(0, 30) + '...';
+                const time = new Date(item.time).toLocaleDateString();
+
+                html += `<div class="question-card" style="cursor:pointer;" data-fav-index="${idx}">
+                    <div style="margin-bottom:10px;color:#7f8c8d;font-size:12px;">${item.topic} · ${time}</div>
+                    <div style="margin-bottom:10px;"><strong>${summary}</strong></div>
+                    ${item.note ? `<div style="color:#7f8c8d;font-size:13px;margin-top:5px;">📝 ${item.note}</div>` : ''}
+                </div>`;
+            });
+            view.innerHTML = html;
+
+            document.querySelectorAll('.question-card[data-fav-index]').forEach(card => {
+                card.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.favIndex);
+                    showFavoriteQuestion(idx);
+                });
+            });
+
+            document.getElementById('clearFavBtn').addEventListener('click', function() {
+                if (confirm('确定要清空所有收藏吗？')) {
+                    favorites = {};
+                    localStorage.setItem('favorites', JSON.stringify(favorites));
+                    showFavoritesList();
+                }
+            });
+        }
+
+        function showFavoriteQuestion(index) {
+            const items = Object.values(favorites);
+            practiceQuestions = items.map(f => f.question);
+            currentQuestionIndex = index;
+            currentMode = 'favorite';
+
+            restorePracticeView();
+            showQuestion(index);
+            updateCollectBtn();
+        }
+
+        function cleanMasteredQuestions() {
+            const now = new Date().getTime();
+            let removed = 0;
+            Object.keys(wrongQuestions).forEach(key => {
+                if (wrongQuestions[key].status === 'mastered' && wrongQuestions[key].masteredTime) {
+                    const masteredTime = new Date(wrongQuestions[key].masteredTime).getTime();
+                    if (now - masteredTime > 3 * 24 * 60 * 60 * 1000) {
+                        delete wrongQuestions[key];
+                        removed++;
+                    }
+                }
+            });
+            if (removed > 0) {
+                localStorage.setItem('wrongQuestions', JSON.stringify(wrongQuestions));
+                console.log(`已移除 ${removed} 道已掌握题目`);
+            }
+        }
+
+        function getStatusLabel(item) {
+            if (item.status === 'mastered') return '已掌握';
+            if (item.correctCount === 1) return '即将掌握';
+            if (item.wrongCount === 1) return '新错题';
+            return '待复习';
+        }
+
+        function showWrongQuestionsList() {
+            cleanMasteredQuestions();
+            const view = document.getElementById('practice-view');
+            const items = Object.values(wrongQuestions);
+
+            if (items.length === 0) {
+                view.innerHTML = '<div class="question-card"><p>错题本为空</p></div>';
+                return;
+            }
+
+            let html = '<div style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;"><h3>错题本 (共 ' + items.length + ' 题)</h3><button class="btn-secondary" id="clearWrongBtn">一键清空</button></div>';
+
+            // 统计专题分布
+            const topicStats = {};
+            items.forEach(item => {
+                const topic = item.question.专题 || '未知专题';
+                topicStats[topic] = (topicStats[topic] || 0) + 1;
+            });
+            const topicText = Object.entries(topicStats).map(([topic, count]) => `${topic} ${count}题`).join('，');
+            html += '<div style="color:#7f8c8d;font-size:13px;margin-bottom:15px;">专题分布：' + topicText + '</div>';
+
+            items.forEach((item, idx) => {
+                const summary = item.question.题目.substring(0, 30) + '...';
+                const status = getStatusLabel(item);
+                const statusColor = item.status === 'mastered' ? '#95a5a6' : '#e74c3c';
+                const cardOpacity = item.status === 'mastered' ? 'opacity:0.5;' : '';
+                const topic = item.question.专题 || '未知专题';
+
+                html += `<div class="question-card" style="${cardOpacity}cursor:pointer;" data-question-index="${idx}">
+                    <div style="margin-bottom:10px;color:#7f8c8d;font-size:12px;">${topic}</div>
+                    <div style="margin-bottom:10px;"><strong>${summary}</strong></div>
+                    <div style="margin-top:10px;"><span style="background:${statusColor};color:white;padding:3px 8px;border-radius:3px;font-size:12px;">${status}</span> 已错 ${item.wrongCount} 次</div>
+                </div>`;
+            });
+            view.innerHTML = html;
+
+            document.querySelectorAll('.question-card[data-question-index]').forEach(card => {
+                card.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.questionIndex);
+                    showWrongQuestion(idx);
+                });
+            });
+
+            document.getElementById('clearWrongBtn').addEventListener('click', function() {
+                if (confirm('确定要清空所有错题吗？')) {
+                    wrongQuestions = {};
+                    localStorage.setItem('wrongQuestions', JSON.stringify(wrongQuestions));
+                    showWrongQuestionsList();
+                }
+            });
+        }
+
+        function showWrongQuestion(index) {
+            const items = Object.values(wrongQuestions);
+            practiceQuestions = items.map(w => w.question);
+            currentQuestionIndex = index;
+            currentMode = 'wrong';
+
+            const view = document.getElementById('practice-view');
+            view.innerHTML = `
+                <div id="question-count-selector" style="margin-bottom:20px;display:none;"></div>
+                <div class="question-card">
+                    <div class="question-header">
+                        <div class="question-number">题目 1/100</div>
+                    </div>
+                    <div class="question-text">[题目内容将在这里显示]</div>
+                    <div class="options"></div>
+                    <div class="button-group">
+                        <button class="btn-primary" id="submitBtn">提交答案</button>
+                        <button class="btn-secondary" id="nextBtn">下一题</button>
+                        <button class="btn-secondary" id="backBtn">返回列表</button>
+                        <button class="btn-secondary" id="collectBtn">收藏本题</button>
+                        <button class="btn-secondary" id="hintBtn">提示</button>
+                        <span id="hintText" style="display:none;margin-left:15px;color:#7f8c8d;">专题一 专利法基础知识与权利归属</span>
+                    </div>
+                    <div class="analysis">
+                        <h4>📖 答案解析</h4>
+                        <p>[AI深度解析将在这里显示]</p>
+                    </div>
+                </div>`;
+
+            showQuestion(index);
+            attachEventListeners();
+
+            // 添加返回列表按钮事件
+            document.getElementById('backBtn').addEventListener('click', function() {
+                showWrongQuestionsList();
+            });
+
+            // 重写提交按钮，添加错题提示
+            const wrongAnswer = items[index].wrongAnswers[items[index].wrongAnswers.length - 1];
+            document.getElementById('submitBtn').addEventListener('click', function() {
+                if (!currentQuestion) return;
+                const selected = document.querySelectorAll('.option.selected');
+                if (selected.length === 0) {
+                    alert('请先选择答案');
+                    return;
+                }
+                const userAnswer = Array.from(selected).map(opt => opt.dataset.option).sort().join('');
+                const correctAnswer = currentQuestion.答案;
+
+                if (userAnswer !== correctAnswer) {
+                    addWrongQuestion(currentQuestion, userAnswer);
+                } else {
+                    updateCorrectCount(currentQuestion);
+                }
+
+                document.querySelectorAll('.option').forEach(opt => {
+                    const isCorrect = correctAnswer.includes(opt.dataset.option);
+                    const isSelected = opt.classList.contains('selected');
+                    if (isCorrect && isSelected) {
+                        opt.classList.add('correct');
+                    } else if (isCorrect && !isSelected) {
+                        opt.classList.add('missed');
+                    } else if (!isCorrect && isSelected) {
+                        opt.classList.add('wrong');
+                    }
+                });
+
+                const analysisDiv = document.querySelector('.analysis');
+                analysisDiv.querySelector('p').innerHTML = `<div style="background:#fff3cd;padding:10px;margin-bottom:15px;border-radius:5px;">⚠️ 你上次错误选项为 <strong>${wrongAnswer}</strong></div>${currentQuestion.解析}`;
+                analysisDiv.classList.add('show');
+            });
+        }
+
+        // 渲染专题列表
+        function renderTopics() {
+            const topicList = document.getElementById('topic-list');
+            topicList.innerHTML = '';
+
+            const subjectTopics = topics[currentSubject];
+            if (subjectTopics.length === 0) {
+                topicList.innerHTML = '<div style="padding:10px;color:#999;">暂无专题</div>';
+                return;
+            }
+
+            subjectTopics.forEach((topic, index) => {
+                const item = document.createElement('div');
+                item.className = 'menu-item';
+                item.style.fontSize = '13px';
+                item.textContent = topic;
+                item.dataset.topic = index + 1;
+                item.addEventListener('click', function() {
+                    loadTopicQuestions(index + 1);
+                });
+                topicList.appendChild(item);
+            });
+        }
+
+        // 科目切换
+        document.querySelectorAll('.subject-tabs button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelector('.subject-tabs button.active').classList.remove('active');
+                this.classList.add('active');
+                currentSubject = this.dataset.subject;
+                loadSubjectData();
+            });
+        });
+
+        // 模式切换
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (this.dataset.mode) {
+                    const topicList = document.getElementById('topic-list');
+
+                    if (this.dataset.mode === 'topic') {
+                        topicList.style.display = topicList.style.display === 'none' ? 'block' : 'none';
+                        if (topicList.style.display === 'none') return;
+                    } else {
+                        topicList.style.display = 'none';
+                    }
+
+                    document.querySelectorAll('.menu-item[data-mode]').forEach(m => m.classList.remove('active'));
+                    this.classList.add('active');
+                    currentMode = this.dataset.mode;
+                    switchMode(currentMode);
+                }
+            });
+        });
+
+        // 选项选择
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // 功能函数
+        function loadSubjectData() {
+            console.log('加载科目数据:', currentSubject);
+            renderTopics();
+            if (currentSubject === '专利法') {
+                Promise.all([
+                    fetch('处理后数据/专题1-题库.json').then(r => r.json()),
+                    fetch('处理后数据/专题2-题库.json').then(r => r.json()),
+                    fetch('处理后数据/专题3-题库.json').then(r => r.json())
+                ]).then(dataList => {
+                    allQuestions = [];
+                    dataList.forEach(data => {
+                        const questionsWithTopic = data.题目.map(q => ({...q, 专题: data.专题}));
+                        allQuestions.push(...questionsWithTopic);
+                    });
+                    practiceQuestions = shuffleArray(allQuestions);
+                    if (practiceQuestions.length > 0) {
+                        const selector = document.getElementById('question-count-selector');
+                        if (selector) selector.style.display = 'flex';
+                        showQuestion(0);
+                    }
+                }).catch(err => console.error('加载题库失败:', err));
+            }
+        }
+
+        function showQuestion(index) {
+            if (index < 0 || index >= practiceQuestions.length) return;
+            currentQuestionIndex = index;
+            currentQuestion = practiceQuestions[index];
+
+            // 更新题号
+            document.querySelector('.question-number').textContent = `题目 ${index + 1}/${practiceQuestions.length}`;
+
+            // 更新题目
+            document.querySelector('.question-text').innerHTML = `${currentQuestion.题目} <span class="question-type">(${currentQuestion.类型})</span>`;
+
+            // 更新专题提示内容但保持隐藏
+            const hintText = document.getElementById('hintText');
+            if (hintText && currentQuestion.专题) {
+                hintText.textContent = currentQuestion.专题;
+                hintText.style.display = 'none';
+            }
+
+            // 更新选项
+            const optionsDiv = document.querySelector('.options');
+            optionsDiv.innerHTML = '';
+            for (let key in currentQuestion.选项) {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.dataset.option = key;
+                div.textContent = `${key}. ${currentQuestion.选项[key]}`;
+                div.addEventListener('click', function() {
+                    if (currentQuestion.类型 === '单选') {
+                        document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+                        this.classList.add('selected');
+                    } else {
+                        this.classList.toggle('selected');
+                    }
+                });
+                optionsDiv.appendChild(div);
+            }
+
+            // 隐藏解析
+            document.querySelector('.analysis').classList.remove('show');
+
+            // 更新收藏按钮状态
+            updateCollectBtn();
+        }
+
+        function renderStats() {
+            const wrongCount = Object.keys(wrongQuestions).length;
+            const reviewCount = Object.values(wrongQuestions).filter(w => w.correctCount < 2).length;
+            let totalQuestions = 0;
+            let correctQuestions = 0;
+            const dailyStats = {};
+            const topicStats = {};
+            const allRecords = Object.values(studyStats).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            allRecords.forEach(record => {
+                totalQuestions += record.total;
+                correctQuestions += record.correct;
+                const date = record.date.split('T')[0];
+                if (!dailyStats[date]) dailyStats[date] = { total: 0, correct: 0 };
+                dailyStats[date].total += record.total;
+                dailyStats[date].correct += record.correct;
+            });
+
+            const accuracy = totalQuestions > 0 ? Math.round(correctQuestions / totalQuestions * 100) : 0;
+            const today = new Date().toISOString().split('T')[0];
+            const todayNew = dailyStats[today] ? dailyStats[today].total : 0;
+            const lastPractice = allRecords.length > 0 ? new Date(allRecords[0].date).toLocaleString() : '暂无';
+
+            let accuracyChange = '';
+            if (allRecords.length >= 2) {
+                const lastAcc = Math.round(allRecords[0].correct / allRecords[0].total * 100);
+                const prevAcc = Math.round(allRecords[1].correct / allRecords[1].total * 100);
+                const diff = lastAcc - prevAcc;
+                if (diff > 0) accuracyChange = `<span class="stat-change up">↑${diff}%</span>`;
+                else if (diff < 0) accuracyChange = `<span class="stat-change down">↓${Math.abs(diff)}%</span>`;
+            }
+
+            document.getElementById('total-questions').textContent = totalQuestions;
+            document.getElementById('accuracy-rate').textContent = accuracy + '%';
+            document.getElementById('wrong-count').textContent = wrongCount;
+            document.getElementById('today-new').textContent = `今日新增${todayNew}题`;
+            document.getElementById('accuracy-change').innerHTML = accuracyChange;
+            document.getElementById('review-count').textContent = `其中待复习${reviewCount}题`;
+
+            const sessionAcc = sessionStats.total > 0 ? Math.round(sessionStats.correct / sessionStats.total * 100) : 0;
+            document.getElementById('session-rate').textContent = sessionAcc + '%';
+            document.getElementById('session-count').textContent = `本次${sessionStats.total}题`;
+
+            renderTrendChart(allRecords);
+            renderHeatmap(dailyStats);
+            renderTopicMastery();
+        }
+
+        function renderTopicMastery() {
+            const topicList = topics[currentSubject] || [];
+            let html = '<h3 style="margin-bottom:15px;">专题掌握程度</h3>';
+
+            topicList.forEach(topic => {
+                const acc = 0;
+                const done = 0;
+                const color = acc < 60 ? '#e74c3c' : acc < 80 ? '#f39c12' : '#27ae60';
+                html += `<div class="topic-progress">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                        <span>${topic}</span>
+                        <span>${acc}% (${done}题)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width:${acc}%;background:${color};"></div>
+                    </div>
+                </div>`;
+            });
+
+            document.getElementById('topic-mastery').innerHTML = html;
+        }
+
+        function renderTrendChart(records) {
+            const recent = records.slice(0, 10).reverse();
+            let html = '<h3>正确率趋势（最近10次练习）</h3>';
+
+            if (recent.length < 2) {
+                html += '<p style="color:#999;text-align:center;padding:50px;">数据不足，至少需要2次练习记录</p>';
+                document.getElementById('trend-chart').innerHTML = html;
+                return;
+            }
+
+            // 计算总正确率
+            let totalQ = 0, totalC = 0;
+            records.forEach(r => { totalQ += r.total; totalC += r.correct; });
+            const avgAcc = totalQ > 0 ? (totalC / totalQ * 100) : 0;
+
+            const width = 700;
+            const height = 300;
+            const padding = 50;
+            const chartWidth = width - padding * 2 - 150;
+            const chartHeight = height - padding * 2;
+
+            html += `<div style="display:flex;gap:20px;"><svg width="${width - 150}" height="${height}" viewBox="0 0 ${width - 150} ${height}">`;
+
+            // 坐标轴
+            html += `<line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height - padding}" stroke="#ccc" stroke-width="2"/>`;
+            html += `<line x1="${padding}" y1="${height - padding}" x2="${width - 150 - padding}" y2="${height - padding}" stroke="#ccc" stroke-width="2"/>`;
+
+            // Y轴刻度
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                const value = 100 - i * 20;
+                html += `<line x1="${padding - 5}" y1="${y}" x2="${padding}" y2="${y}" stroke="#ccc"/>`;
+                html += `<text x="${padding - 10}" y="${y + 5}" text-anchor="end" font-size="12" fill="#666">${value}%</text>`;
+            }
+
+            // 总正确率参考线
+            const avgY = padding + chartHeight - (avgAcc / 100 * chartHeight);
+            html += `<line x1="${padding}" y1="${avgY}" x2="${width - 150 - padding}" y2="${avgY}" stroke="#e74c3c" stroke-width="1" stroke-dasharray="5,5"/>`;
+
+            // 单次正确率折线
+            const step = chartWidth / (recent.length - 1);
+            let points = '';
+            recent.forEach((r, i) => {
+                const acc = r.correct / r.total * 100;
+                const x = padding + i * step;
+                const y = padding + chartHeight - (acc / 100 * chartHeight);
+                points += `${x},${y} `;
+                html += `<circle cx="${x}" cy="${y}" r="5" fill="#3498db"/>`;
+                html += `<text x="${x}" y="${y - 10}" text-anchor="middle" font-size="11" fill="#3498db">${Math.round(acc)}%</text>`;
+                html += `<text x="${x}" y="${height - padding + 20}" text-anchor="middle" font-size="12" fill="#666">第${i + 1}次</text>`;
+            });
+
+            html += `<polyline points="${points}" fill="none" stroke="#3498db" stroke-width="2"/>`;
+            html += `</svg><div style="padding:20px;"><h4>数据统计</h4>`;
+            html += `<p style="margin:10px 0;"><span style="color:#3498db;">●</span> 单次正确率</p>`;
+            html += `<p style="margin:10px 0;"><span style="color:#e74c3c;">- -</span> 总正确率: ${avgAcc.toFixed(1)}%</p>`;
+            html += `<p style="margin:10px 0;color:#666;">最高: ${Math.max(...recent.map(r => Math.round(r.correct / r.total * 100)))}%</p>`;
+            html += `<p style="margin:10px 0;color:#666;">最低: ${Math.min(...recent.map(r => Math.round(r.correct / r.total * 100)))}%</p>`;
+            html += `</div></div>`;
+
+            document.getElementById('trend-chart').innerHTML = html;
+        }
+
+        function toggleRecord(idx) {
+            const details = document.getElementById('record-' + idx);
+            details.style.display = details.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function renderHeatmap(dailyStats) {
+            const today = new Date();
+            const days = 90;
+            let html = '<div class="heatmap">';
+
+            for (let week = 0; week < Math.ceil(days / 7); week++) {
+                html += '<div class="heatmap-col">';
+                for (let day = 0; day < 7; day++) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - (days - week * 7 - day));
+                    const dateStr = date.toISOString().split('T')[0];
+                    const stat = dailyStats[dateStr];
+                    const level = stat ? Math.min(4, Math.floor(stat.total / 5)) : 0;
+                    const title = stat ? `${dateStr}: ${stat.total}题, 正确率${Math.round(stat.correct/stat.total*100)}%` : dateStr;
+                    html += `<div class="heatmap-cell level-${level}" title="${title}"></div>`;
+                }
+                html += '</div>';
+            }
+            html += '</div>';
+
+            document.getElementById('heatmap').innerHTML = html;
+        }
+
+        function switchMode(mode) {
+            const selector = document.getElementById('question-count-selector');
+            if (mode === 'stats') {
+                document.getElementById('practice-view').style.display = 'none';
+                document.getElementById('stats-view').style.display = 'block';
+                document.getElementById('history-view').style.display = 'none';
+                renderStats();
+
+                const clearBtn = document.getElementById('clearStatsBtn');
+                if (clearBtn) {
+                    clearBtn.replaceWith(clearBtn.cloneNode(true));
+                    document.getElementById('clearStatsBtn').addEventListener('click', function() {
+                        if (confirm('确定要清空所有统计数据吗？此操作不可恢复！')) {
+                            studyStats = {};
+                            sessionStats = { total: 0, correct: 0 };
+                            localStorage.setItem('studyStats', JSON.stringify(studyStats));
+                            renderStats();
+                        }
+                    });
+                }
+            } else if (mode === 'history') {
+                document.getElementById('practice-view').style.display = 'none';
+                document.getElementById('stats-view').style.display = 'none';
+                document.getElementById('history-view').style.display = 'block';
+            } else if (mode === 'random') {
+                restorePracticeView();
+                document.getElementById('practice-view').style.display = 'block';
+                document.getElementById('stats-view').style.display = 'none';
+                document.getElementById('history-view').style.display = 'none';
+                loadSubjectData();
+            } else if (mode === 'topic') {
+                restorePracticeView();
+                document.getElementById('practice-view').style.display = 'block';
+                document.getElementById('stats-view').style.display = 'none';
+                document.getElementById('history-view').style.display = 'none';
+            } else if (mode === 'wrong') {
+                document.getElementById('practice-view').style.display = 'block';
+                document.getElementById('stats-view').style.display = 'none';
+                document.getElementById('history-view').style.display = 'none';
+                showWrongQuestionsList();
+            } else if (mode === 'favorite') {
+                document.getElementById('practice-view').style.display = 'block';
+                document.getElementById('stats-view').style.display = 'none';
+                document.getElementById('history-view').style.display = 'none';
+                showFavoritesList();
+            } else if (mode === 'review') {
+                restorePracticeView();
+                document.getElementById('practice-view').style.display = 'block';
+                document.getElementById('stats-view').style.display = 'none';
+                document.getElementById('history-view').style.display = 'none';
+                alert('复习提醒功能开发中');
+            } else if (mode === 'exam') {
+                restorePracticeView();
+                document.getElementById('practice-view').style.display = 'block';
+                document.getElementById('stats-view').style.display = 'none';
+                document.getElementById('history-view').style.display = 'none';
+                alert('模拟考试功能开发中');
+            } else {
+                document.getElementById('practice-view').style.display = 'block';
+                document.getElementById('stats-view').style.display = 'none';
+                document.getElementById('history-view').style.display = 'none';
+            }
+        }
+
+        function restorePracticeView() {
+            const view = document.getElementById('practice-view');
+            view.innerHTML = `
+                <div id="question-count-selector" style="margin-bottom:20px;display:none;">
+                    <button class="btn-secondary" data-count="10">10题</button>
+                    <button class="btn-secondary" data-count="20">20题</button>
+                    <button class="btn-secondary" data-count="30">30题</button>
+                    <button class="btn-secondary" data-count="50">50题</button>
+                    <button class="btn-secondary active" data-count="all">全部</button>
+                </div>
+                <div class="question-card">
+                    <div class="question-header">
+                        <div class="question-number">题目 1/100</div>
+                    </div>
+                    <div class="question-text">[题目内容将在这里显示]</div>
+                    <div class="options"></div>
+                    <div class="button-group">
+                        <button class="btn-primary" id="submitBtn">提交答案</button>
+                        <button class="btn-secondary" id="nextBtn">下一题</button>
+                        <button class="btn-secondary" id="collectBtn">收藏本题</button>
+                        <button class="btn-secondary" id="hintBtn">提示</button>
+                        <span id="hintText" style="display:none;margin-left:15px;color:#7f8c8d;">专题一 专利法基础知识与权利归属</span>
+                    </div>
+                    <div class="analysis">
+                        <h4>📖 答案解析</h4>
+                        <p>[AI深度解析将在这里显示]</p>
+                    </div>
+                </div>`;
+            attachEventListeners();
+        }
+
+        function loadTopicQuestions(topicNum) {
+            if (currentSubject === '专利法') {
+                fetch(`处理后数据/专题${topicNum}-题库.json`)
+                    .then(res => res.json())
+                    .then(data => {
+                        allQuestions = data.题目.map(q => ({...q, 专题: data.专题}));
+                        practiceQuestions = shuffleArray(allQuestions);
+                        if (practiceQuestions.length > 0) {
+                            showQuestion(0);
+                        } else {
+                            alert('该专题暂无题目');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('加载题库失败:', err);
+                        alert('加载专题题库失败，请检查文件是否存在');
+                    });
+            }
+        }
+
+        // 按钮事件
+        document.addEventListener('DOMContentLoaded', function() {
+            renderStats();
+            attachEventListeners();
+        });
+
+        function attachEventListeners() {
+            // 提交答案
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) {
+                submitBtn.replaceWith(submitBtn.cloneNode(true));
+                document.getElementById('submitBtn').addEventListener('click', function() {
+                    if (!currentQuestion) return;
+                    const selected = document.querySelectorAll('.option.selected');
+                    if (selected.length === 0) {
+                        alert('请先选择答案');
+                        return;
+                    }
+                    const userAnswer = Array.from(selected).map(opt => opt.dataset.option).sort().join('');
+                    const correctAnswer = currentQuestion.答案;
+
+                    // 判断对错并记录
+                    const isCorrect = userAnswer === correctAnswer;
+                    if (!isCorrect) {
+                        addWrongQuestion(currentQuestion, userAnswer);
+                    } else {
+                        updateCorrectCount(currentQuestion);
+                    }
+
+                    // 记录本次统计
+                    sessionStats.total++;
+                    if (isCorrect) sessionStats.correct++;
+
+                    // 记录统计数据
+                    const today = new Date().toISOString();
+                    const statKey = today + '_' + currentMode;
+                    if (!studyStats[statKey]) {
+                        studyStats[statKey] = { date: today, mode: currentMode, total: 0, correct: 0 };
+                    }
+                    studyStats[statKey].total++;
+                    if (isCorrect) studyStats[statKey].correct++;
+                    localStorage.setItem('studyStats', JSON.stringify(studyStats));
+
+                    // 显示正确答案
+                    document.querySelectorAll('.option').forEach(opt => {
+                        const isCorrect = correctAnswer.includes(opt.dataset.option);
+                        const isSelected = opt.classList.contains('selected');
+
+                        if (isCorrect && isSelected) {
+                            opt.classList.add('correct');
+                        } else if (isCorrect && !isSelected) {
+                            opt.classList.add('missed');
+                        } else if (!isCorrect && isSelected) {
+                            opt.classList.add('wrong');
+                        }
+                    });
+
+                    // 显示解析
+                    const analysisDiv = document.querySelector('.analysis');
+                    analysisDiv.querySelector('p').textContent = currentQuestion.解析;
+                    analysisDiv.querySelector('h4').innerHTML = `📖 <span style="font-size:24px;color:#000;">${correctAnswer}</span>`;
+                    analysisDiv.classList.add('show');
+                });
+            }
+
+            // 下一题
+            const nextBtn = document.getElementById('nextBtn');
+            if (nextBtn) {
+                nextBtn.replaceWith(nextBtn.cloneNode(true));
+                document.getElementById('nextBtn').addEventListener('click', function() {
+                    if (currentMode === 'wrong' || currentMode === 'favorite') {
+                        const randomIndex = Math.floor(Math.random() * practiceQuestions.length);
+                        showQuestion(randomIndex);
+                    } else {
+                        if (currentQuestionIndex < practiceQuestions.length - 1) {
+                            showQuestion(currentQuestionIndex + 1);
+                        } else {
+                            alert('已经是最后一题了');
+                        }
+                    }
+                });
+            }
+
+            // 收藏本题
+            const collectBtn = document.getElementById('collectBtn');
+            if (collectBtn) {
+                collectBtn.replaceWith(collectBtn.cloneNode(true));
+                document.getElementById('collectBtn').addEventListener('click', function() {
+                    if (!currentQuestion) return;
+                    toggleFavorite(currentQuestion);
+                });
+            }
+
+            // 提示按钮
+            const hintBtn = document.getElementById('hintBtn');
+            if (hintBtn) {
+                hintBtn.replaceWith(hintBtn.cloneNode(true));
+                document.getElementById('hintBtn').addEventListener('click', function() {
+                    if (!currentQuestion) return;
+                    const hintText = document.getElementById('hintText');
+                    hintText.style.display = hintText.style.display === 'none' ? 'inline' : 'none';
+                });
+            }
+
+            // 题目数量选择
+            document.querySelectorAll('#question-count-selector button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#question-count-selector button').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const count = this.dataset.count;
+                    const shuffled = shuffleArray(allQuestions);
+
+                    if (count === 'all') {
+                        practiceQuestions = shuffled;
+                    } else {
+                        practiceQuestions = shuffled.slice(0, parseInt(count));
+                    }
+
+                    if (practiceQuestions.length > 0) {
+                        showQuestion(0);
+                    }
+                });
+            });
+        }
+
+        // 初始化
+        loadSubjectData();
+    </script>
+</body>
+</html>
