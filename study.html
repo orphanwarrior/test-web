@@ -130,6 +130,8 @@
             cursor: pointer;
             font-size: 14px;
             transition: 0.3s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
         .btn-primary { background: #3498db; color: white; }
         .btn-primary:hover { background: #2980b9; }
@@ -1217,6 +1219,11 @@
                 });
             });
         }
+
+        // 移动端事件修复
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.addEventListener('touchstart', function() {}, {passive: true});
+        });
 
         // 初始化
         loadSubjectData();
