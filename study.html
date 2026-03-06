@@ -107,6 +107,9 @@
             border-radius: 8px;
             cursor: pointer;
             transition: 0.3s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
         }
         .option:hover { border-color: #3498db; background: #f8f9fa; }
         .option.selected { border-color: #3498db; background: #e3f2fd; }
@@ -211,7 +214,7 @@
 <body>
     <!-- 顶部导航 -->
     <div class="header">
-        <h1>邓可月脚庞臭</h1>
+        <h1>邓可月脚庞臭👃🤏</h1>
         <div class="subject-tabs">
             <button class="active" data-subject="专利法">1</button>
             <button data-subject="相关法">2</button>
@@ -774,13 +777,18 @@
                 div.className = 'option';
                 div.dataset.option = key;
                 div.textContent = `${key}. ${currentQuestion.选项[key]}`;
-                div.addEventListener('click', function() {
+                div.addEventListener('click', function(e) {
+                    e.preventDefault();
                     if (currentQuestion.类型 === '单选') {
                         document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
                         this.classList.add('selected');
                     } else {
                         this.classList.toggle('selected');
                     }
+                });
+                div.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    this.click();
                 });
                 optionsDiv.appendChild(div);
             }
