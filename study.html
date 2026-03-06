@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>邓可月脚庞臭</title>
+    <title>沉痛怀念邓豆皮</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -211,7 +211,7 @@
 <body>
     <!-- 顶部导航 -->
     <div class="header">
-        <h1>邓可月给我冲</h1>
+        <h1>邓可月脚庞臭</h1>
         <div class="subject-tabs">
             <button class="active" data-subject="专利法">1</button>
             <button data-subject="相关法">2</button>
@@ -225,7 +225,7 @@
             <h3>诚招老鼠两只，要求敏捷听话能咬人</h3>
             <div class="menu-item active" data-mode="stats">学习统计</div>
             <div class="menu-item" data-mode="random">随机练习</div>
-            <div class="menu-item" data-mode="topic">按专题练习</div>
+            <div class="menu-item" data-mode="topic">专题练习</div>
             <div id="topic-list" style="display:none;padding-left:15px;"></div>
             <div class="menu-item" data-mode="wrong">错题本</div>
             <div class="menu-item" data-mode="favorite">收藏夹</div>
@@ -260,6 +260,7 @@
                     </div>
                     <div class="button-group">
                         <button class="btn-primary" id="submitBtn">提交答案</button>
+                        <button class="btn-secondary" id="prevBtn">上一题</button>
                         <button class="btn-secondary" id="nextBtn">下一题</button>
                         <button class="btn-secondary" id="collectBtn">收藏本题</button>
                         <button class="btn-secondary" id="hintBtn">提示</button>
@@ -602,6 +603,7 @@
                     <div class="options"></div>
                     <div class="button-group">
                         <button class="btn-primary" id="submitBtn">提交答案</button>
+                        <button class="btn-secondary" id="prevBtn">上一题</button>
                         <button class="btn-secondary" id="nextBtn">下一题</button>
                         <button class="btn-secondary" id="backBtn">返回列表</button>
                         <button class="btn-secondary" id="collectBtn">收藏本题</button>
@@ -1033,6 +1035,7 @@
                     <div class="options"></div>
                     <div class="button-group">
                         <button class="btn-primary" id="submitBtn">提交答案</button>
+                        <button class="btn-secondary" id="prevBtn">上一题</button>
                         <button class="btn-secondary" id="nextBtn">下一题</button>
                         <button class="btn-secondary" id="collectBtn">收藏本题</button>
                         <button class="btn-secondary" id="hintBtn">提示</button>
@@ -1144,6 +1147,24 @@
                             showQuestion(currentQuestionIndex + 1);
                         } else {
                             alert('已经是最后一题了');
+                        }
+                    }
+                });
+            }
+
+            // 上一题
+            const prevBtn = document.getElementById('prevBtn');
+            if (prevBtn) {
+                prevBtn.replaceWith(prevBtn.cloneNode(true));
+                document.getElementById('prevBtn').addEventListener('click', function() {
+                    if (currentMode === 'wrong' || currentMode === 'favorite') {
+                        const randomIndex = Math.floor(Math.random() * practiceQuestions.length);
+                        showQuestion(randomIndex);
+                    } else {
+                        if (currentQuestionIndex > 0) {
+                            showQuestion(currentQuestionIndex - 1);
+                        } else {
+                            alert('已经是第一题了');
                         }
                     }
                 });
