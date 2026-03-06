@@ -173,6 +173,30 @@
         .stat-change { font-size: 12px; margin-top: 5px; }
         .stat-change.up { color: #27ae60; }
         .stat-change.down { color: #e74c3c; }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .header { padding: 10px 15px; }
+            .header h1 { font-size: 16px; margin-bottom: 8px; }
+            .subject-tabs { flex-wrap: wrap; gap: 5px; }
+            .subject-tabs button { padding: 6px 12px; font-size: 14px; }
+
+            .container { flex-direction: column; height: auto; }
+            .sidebar { width: 100%; padding: 15px; max-height: 200px; overflow-y: auto; }
+            .content { padding: 15px; }
+
+            .stats-panel { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .stat-card { padding: 15px; }
+            .stat-value { font-size: 24px; }
+
+            .question-card { padding: 15px; }
+            .question-text { font-size: 16px; }
+            .option { padding: 12px; font-size: 15px; }
+            .button-group { flex-wrap: wrap; gap: 8px; }
+            .btn-primary, .btn-secondary { padding: 10px 15px; font-size: 14px; }
+
+            #question-count-selector { flex-wrap: wrap; }
+        }
     </style>
 </head>
 <body>
