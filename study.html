@@ -234,9 +234,9 @@
             <div id="topic-list" style="display:none;padding-left:15px;"></div>
             <div class="menu-item" data-mode="wrong">错题本</div>
             <div class="menu-item" data-mode="favorite">收藏夹</div>
-            <div class="menu-item" data-mode="review">复习提醒</div>
-            <div class="menu-item" data-mode="exam">模拟考试</div>
-            <div class="menu-item" data-mode="history">提问历史</div>
+            <div class="menu-item" data-mode="review">复习提醒（未完成）</div>
+            <div class="menu-item" data-mode="exam">模拟考试（未完成）</div>
+            <div class="menu-item" data-mode="history">提问笔记</div>
         </div>
 
         <!-- 主内容区 -->
@@ -273,7 +273,7 @@
                     </div>
                     <div class="analysis">
                         <h4>📖 答案解析</h4>
-                        <p>[AI深度解析将在这里显示]</p>
+                        <p>提交答案后显示题库解析</p>
                     </div>
                 </div>
             </div>
@@ -316,25 +316,25 @@
                 <div id="topic-mastery" style="margin-top:30px;"></div>
             </div>
 
-            <!-- 提问历史界面（隐藏） -->
+            <!-- 提问笔记界面（隐藏） -->
             <div id="history-view" style="display:none;">
-                <h2 style="margin-bottom: 20px;">提问历史</h2>
+                <h2 style="margin-bottom: 20px;">提问笔记</h2>
                 <div class="question-card">
-                    <h3>📝 如何使用提问功能</h3>
-                    <p style="margin:15px 0;">当你需要向AI提问专利法相关问题时，请按以下步骤操作：</p>
+                    <h3>做题时有疑问，可以这样整理</h3>
+                    <p style="margin:15px 0;">这里记的是我在外部 AI 工具里整理问题的办法。网页没有接入聊天，也不会保存对话。</p>
                     <ol style="margin-left:20px;line-height:1.8;">
-                        <li>在对话开始时说明："引用提问.md，我要提问"</li>
-                        <li>直接提出你的问题</li>
-                        <li>AI会将对话内容总结到"提问历史"侧边栏</li>
+                        <li>把题干、选项和解析一起复制到自己使用的 AI 工具里</li>
+                        <li>说明具体哪里不理解，比如某个选项为什么错</li>
+                        <li>讨论完可以请工具整理成笔记，再自己保存</li>
                     </ol>
-                    <h4 style="margin-top:20px;">提问示例：</h4>
+                    <h4 style="margin-top:20px;">可以问得具体一些：</h4>
                     <ul style="margin-left:20px;line-height:1.8;">
                         <li>外观设计专利保护期限是多少年？</li>
                         <li>职务发明创造的奖励标准是什么？</li>
                         <li>专利权共有人如何行使权利？</li>
                         <li>什么情况下属于职务发明创造？</li>
                     </ul>
-                    <p style="margin-top:20px;color:#7f8c8d;">💡 注意：AI会自动记录你的提问、涉及的知识点、解答要点和理解建议。</p>
+                    <p style="margin-top:20px;color:#7f8c8d;">答案仍需核对原始资料。整理办法写在仓库的“提问.md”里，练习记录保存在当前浏览器。</p>
                 </div>
             </div>
         </div>
@@ -617,7 +617,7 @@
                     </div>
                     <div class="analysis">
                         <h4>📖 答案解析</h4>
-                        <p>[AI深度解析将在这里显示]</p>
+                        <p>提交答案后显示题库解析</p>
                     </div>
                 </div>`;
 
@@ -1060,7 +1060,7 @@
                     </div>
                     <div class="analysis">
                         <h4>📖 答案解析</h4>
-                        <p>[AI深度解析将在这里显示]</p>
+                        <p>提交答案后显示题库解析</p>
                     </div>
                 </div>`;
             attachEventListeners();
