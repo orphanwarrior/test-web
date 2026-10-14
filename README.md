@@ -1,103 +1,64 @@
-# 专利代理师考试学习系统
+# Patent Exam Practice
+专利代理师考试学习系统
 
-## 🌐 在线访问
-**GitHub Pages**: https://orphanwarrior.github.io/test-web/study.html
+I made this for my patent agent exam preparation. It is a small browser app for practicing questions, reading explanations and returning to mistakes.
 
-## 📦 快速开始
+**[Try the app](https://orphanwarrior.github.io/test-web/study.html)**
 
-### 方法一：直接访问在线版本
-打开上面的链接即可使用，支持手机、平板、电脑访问。
+The interface is in Chinese. There is no sign-up; practice records stay in the current browser.
 
-### 方法二：本地运行
-1. 克隆仓库：
+![Random practice and answer feedback](assets/screenshots/practice.jpg)
+
+*A local demonstration session using the bundled question data.*
+
+## Try a short session
+
+1. Choose **随机练习** and a question count.
+2. Select an answer, then click **提交答案** to see the explanation.
+3. Use **错题本** or **收藏夹** to revisit questions.
+4. Open **学习统计** to see local practice activity.
+
+## What it includes
+
+- Random practice, single-choice and multiple-choice questions.
+- Three populated patent-law topics: 26, 24 and 26 questions, **76 in total**.
+- Stored answer explanations, wrong-answer review and favorites.
+- Learning statistics with trend and activity views.
+
+## How it is built
+
+The app uses HTML, CSS and JavaScript, with JSON files for questions and GitHub Pages for hosting. I used AI coding assistance during development.
+
+There is no server-side account system. `localStorage` stores mistakes, favorites and statistics. That keeps the app easy to use, but records do not sync across devices and are lost if browser storage is cleared.
+
+Explanations are part of the question files. Answering a question does not call a live model.
+
+## Current limits
+
+Only the first three patent-law topics have question data. The interface lists 30 topic names, and the other subject tabs are not populated.
+
+Review reminders and mock examinations are placeholders. The question-history page describes an external workflow, not an integrated AI chat feature.
+
+This is a personal study project, not an official question bank. Some content may need correction or updating.
+
+## Run locally
+
 ```bash
 git clone https://github.com/orphanwarrior/test-web.git
 cd test-web
-```
-
-2. 启动本地服务器：
-```bash
 python -m http.server 8000
 ```
 
-3. 访问：http://localhost:8000/study.html
+Open [localhost:8000/study.html](http://localhost:8000/study.html). Serving over HTTP lets the browser load the JSON files; Python is only the local file server.
 
-## 🤖 使用 Claude Code 继续开发
+## Files
 
-### 首次设置
-1. 克隆仓库到本地
-2. 打开 Claude Code CLI
-3. 进入项目目录：
-```bash
-cd /path/to/test-web
+```text
+study.html                  # Interface, styles and practice logic
+处理后数据/专题1-题库.json    # 26 questions
+处理后数据/专题2-题库.json    # 24 questions
+处理后数据/专题3-题库.json    # 26 questions
+提问.md / 添加题目.md         # Content/development notes
 ```
 
-### 继续对话
-直接对 Claude 说：
-- "继续开发专利学习系统"
-- "添加新功能：[描述功能]"
-- "修复bug：[描述问题]"
-- "更新题库"
-
-Claude 会自动读取项目文件并继续之前的工作。
-
-## ✨ 已实现功能
-
-### 核心功能
-- ✅ 随机练习（支持10/20/30/50题选择）
-- ✅ 按专题练习（30个专题）
-- ✅ 错题本（自动收集、状态追踪）
-- ✅ 收藏夹（支持笔记）
-- ✅ 学习统计（正确率趋势、热力图）
-
-### 题库
-- ✅ 专题1：专利法基础知识与权利归属（26题）
-- ✅ 专题2：专利代理制度（24题）
-- ✅ 专题3：说明书（26题）
-
-## 📱 移动端支持
-已优化移动端显示，支持触摸操作。
-
-## 🔄 更新代码到 GitHub
-
-```bash
-git add .
-git commit -m "描述修改内容"
-git push
-```
-
-等待1-2分钟后，GitHub Pages 会自动更新。
-
-## 📁 项目结构
-
-```
-test-web/
-├── study.html              # 主页面
-├── 处理后数据/
-│   ├── 专题1-题库.json
-│   ├── 专题2-题库.json
-│   └── 专题3-题库.json
-├── 提问.md                 # 提问模板
-├── 添加题目.md             # 添加题目模板
-└── README.md               # 本文件
-```
-
-## 💾 数据存储
-
-学习数据存储在浏览器 localStorage 中：
-- `studyStats`: 答题统计
-- `wrongQuestions`: 错题记录
-- `favorites`: 收藏题目
-
-**注意**：不同设备的数据不会自动同步。
-
-## 🛠️ 技术栈
-
-- 纯 HTML/CSS/JavaScript
-- 无需后端服务器
-- GitHub Pages 托管
-
----
-
-**最后更新**: 2026-03-06
-**版本**: v1.0
+My other project, [028 / TTC](https://github.com/orphanwarrior/028-ttc-showcase), explores a larger AI-assisted patent drafting workflow.
