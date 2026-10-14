@@ -1,47 +1,46 @@
-# Patent Exam Practice
-专利代理师考试学习系统
+# 专利代理师考试学习系统
 
-I made this for my patent agent exam preparation. It is a small browser app for practicing questions, reading explanations and returning to mistakes.
+这是我准备专利代理师考试时做的小工具。想练题时打开网页，就能随机出题、提交答案、看解析，也能把错题和收藏留到后面复习。
 
-**[Try the app](https://orphanwarrior.github.io/test-web/study.html)**
+**[直接打开练习系统](https://orphanwarrior.github.io/test-web/study.html)**
 
-The interface is in Chinese. There is no sign-up; practice records stay in the current browser.
+不用注册，学习记录存在当前浏览器里。
 
-![Random practice and answer feedback](assets/screenshots/practice.jpg)
+![随机练习与答案反馈](assets/screenshots/practice.jpg)
 
-*A local demonstration session using the bundled question data.*
+*截图来自独立的本地练习会话，使用项目自带题库。*
 
-## Try a short session
+## 可以这样试一下
 
-1. Choose **随机练习** and a question count.
-2. Select an answer, then click **提交答案** to see the explanation.
-3. Use **错题本** or **收藏夹** to revisit questions.
-4. Open **学习统计** to see local practice activity.
+1. 点“随机练习”，选一个题量。
+2. 选择答案，点“提交答案”看反馈和解析。
+3. 到“错题本”或“收藏夹”回头复习。
+4. 打开“学习统计”，看看自己的练习记录。
 
-## What it includes
+## 现在能做什么
 
-- Random practice, single-choice and multiple-choice questions.
-- Three populated patent-law topics: 26, 24 and 26 questions, **76 in total**.
-- Stored answer explanations, wrong-answer review and favorites.
-- Learning statistics with trend and activity views.
+- 随机练习，支持单选、多选和题量选择。
+- 按已有专题练习，前三个专利法专题分别有 26、24、26 题，共 76 题。
+- 查看题目自带解析，记录错题和收藏。
+- 查看学习统计、正确率趋势和活动记录。
 
-## How it is built
+## 我是怎么做的
 
-The app uses HTML, CSS and JavaScript, with JSON files for questions and GitHub Pages for hosting. I used AI coding assistance during development.
+这个项目用 HTML、CSS 和 JavaScript 实现，题目放在 JSON 文件里，部署在 GitHub Pages。开发时使用了 AI 编程辅助。
 
-There is no server-side account system. `localStorage` stores mistakes, favorites and statistics. That keeps the app easy to use, but records do not sync across devices and are lost if browser storage is cleared.
+我先把它做成一个不用账号就能用的网页。错题、收藏和统计保存在 localStorage，使用起来比较直接，但也有不足：换浏览器或设备不会同步，清除浏览器数据后记录也会丢失。
 
-Explanations are part of the question files. Answering a question does not call a live model.
+解析已经写在题库里，答题时不会实时调用大模型。
 
-## Current limits
+## 还没做完的地方
 
-Only the first three patent-law topics have question data. The interface lists 30 topic names, and the other subject tabs are not populated.
+目前只有前三个专利法专题有题库。界面虽然列出了 30 个专题名称，其他专题和另外两个科目还没有补齐。
 
-Review reminders and mock examinations are placeholders. The question-history page describes an external workflow, not an integrated AI chat feature.
+“复习提醒”和“模拟考试”还只是占位入口。“提问历史”介绍的是外部工具的使用方式，网页里没有集成 AI 对话。
 
-This is a personal study project, not an official question bank. Some content may need correction or updating.
+这是我的个人备考项目，题库不是官方发布的，内容还需要继续核对和更新。
 
-## Run locally
+## 本地运行
 
 ```bash
 git clone https://github.com/orphanwarrior/test-web.git
@@ -49,16 +48,16 @@ cd test-web
 python -m http.server 8000
 ```
 
-Open [localhost:8000/study.html](http://localhost:8000/study.html). Serving over HTTP lets the browser load the JSON files; Python is only the local file server.
+然后打开[本地练习页面](http://localhost:8000/study.html)。这里用 Python 启动文件服务，让浏览器可以读取 JSON，不需要额外搭建后端。
 
-## Files
+## 文件结构
 
 ```text
-study.html                  # Interface, styles and practice logic
-处理后数据/专题1-题库.json    # 26 questions
-处理后数据/专题2-题库.json    # 24 questions
-处理后数据/专题3-题库.json    # 26 questions
-提问.md / 添加题目.md         # Content/development notes
+study.html                  # 页面、样式和练习逻辑
+处理后数据/专题1-题库.json    # 26 题
+处理后数据/专题2-题库.json    # 24 题
+处理后数据/专题3-题库.json    # 26 题
+提问.md / 添加题目.md         # 内容整理与开发记录
 ```
 
-My other project, [028 / TTC](https://github.com/orphanwarrior/028-ttc-showcase), explores a larger AI-assisted patent drafting workflow.
+我还有一个更完整的 AI 专利撰写项目：[028 / TTC](https://github.com/orphanwarrior/028-ttc-showcase)，也欢迎看看。
